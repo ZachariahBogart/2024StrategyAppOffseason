@@ -103,6 +103,11 @@
             .radio-option input[type="radio"] {
                 margin-top: 0;
             }
+
+            .form-group button {
+                padding: 10px 15px;
+                font-size: 20px;
+            }
         }
     </style>
 </head>
@@ -329,19 +334,34 @@
                     break;
                 case 'counter':
                     input = document.createElement('div');
+                    input.style.display = 'flex';
+                    input.style.alignItems = 'center';
+                    input.style.justifyContent = 'center';
+                    input.style.gap = '10px';
+
                     const decreaseBtn = document.createElement('button');
                     decreaseBtn.textContent = '-';
                     decreaseBtn.type = 'button';
+                    decreaseBtn.style.padding = '5px 10px';
+                    decreaseBtn.style.fontSize = '18px';
+
                     const increaseBtn = document.createElement('button');
                     increaseBtn.textContent = '+';
                     increaseBtn.type = 'button';
+                    increaseBtn.style.padding = '5px 10px';
+                    increaseBtn.style.fontSize = '18px';
+
                     const counterDisplay = document.createElement('span');
                     counterDisplay.textContent = '0';
-                    counterDisplay.style.margin = '0 10px';
+                    counterDisplay.style.fontSize = '18px';
+                    counterDisplay.style.minWidth = '30px';
+                    counterDisplay.style.textAlign = 'center';
+
                     const hiddenInput = document.createElement('input');
                     hiddenInput.type = 'hidden';
                     hiddenInput.name = item.code;
                     hiddenInput.value = '0';
+
                     decreaseBtn.onclick = () => {
                         let value = parseInt(hiddenInput.value);
                         if (value > 0) {
@@ -356,6 +376,7 @@
                         hiddenInput.value = value;
                         counterDisplay.textContent = value;
                     };
+
                     input.appendChild(decreaseBtn);
                     input.appendChild(counterDisplay);
                     input.appendChild(increaseBtn);
