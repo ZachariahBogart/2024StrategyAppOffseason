@@ -9,26 +9,36 @@
             font-family: Arial, sans-serif;
             line-height: 1.6;
             color: #333;
-            max-width: 800px;
+            max-width: 100%;
             margin: 0 auto;
             padding: 20px;
+            box-sizing: border-box;
         }
+
         h1, h2 {
             color: #2c3e50;
+            text-align: center;
         }
+
         .form-group {
             margin-bottom: 15px;
         }
+
         label {
             display: block;
             margin-bottom: 5px;
         }
-        input[type="text"], input[type="number"] {
+
+        input[type="text"],
+        input[type="number"],
+        textarea {
             width: 100%;
             padding: 8px;
             border: 1px solid #ddd;
             border-radius: 4px;
+            box-sizing: border-box;
         }
+
         button {
             background-color: #3498db;
             color: white;
@@ -36,15 +46,21 @@
             border: none;
             border-radius: 4px;
             cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
         }
+
         button:hover {
             background-color: #2980b9;
         }
+
         .radio-group {
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
+            justify-content: center;
         }
+
         .radio-option {
             display: flex;
             flex-direction: column;
@@ -52,13 +68,41 @@
             text-align: center;
             min-width: 80px;
         }
+
         .radio-option input[type="radio"] {
             margin-top: 5px;
         }
+
         .logo {
             max-width: 200px;
             margin: 20px auto;
             display: block;
+        }
+
+        #qrcode {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
+            .radio-group {
+                flex-direction: column;
+            }
+
+            .radio-option {
+                flex-direction: row;
+                justify-content: space-between;
+                width: 100%;
+            }
+
+            .radio-option input[type="radio"] {
+                margin-top: 0;
+            }
         }
     </style>
 </head>
@@ -66,7 +110,9 @@
     <h1 id="page-title">SCREAM App</h1>
     <img src="https://i.imgur.com/8gmWi7L.png" alt="Team SCREAM Logo" class="logo">
     <form id="scouting-form"></form>
+    <div id="qrcode"></div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script>
         var config_data = `
         {
@@ -347,56 +393,54 @@
         submitButton.type = 'submit';
         submitButton.textContent = 'Submit';
         form.appendChild(submitButton);
-    </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script>
-      // Modified form submission handler
-      form.onsubmit = (e) => {
-        e.preventDefault();
-        const formData = new FormData(form);
-        let values = [];
-        
-        // Get all form inputs
-        const inputs = form.querySelectorAll('input, textarea, select');
-        
-        inputs.forEach(input => {
-          if (input.type === 'checkbox') {
-            // Handle checkboxes
-            values.push(input.checked ? 'yes' : 'no');
-          } else if (input.type === 'radio') {
-            // Only add radio button value if it's checked
-            if (input.checked) {
-              values.push(input.value);
+
+        // Modified form submission handler
+        form.onsubmit = (e) => {
+            e.preventDefault();
+            const formData = new FormData(form);
+            let values = [];
+            
+            // Get all form inputs
+            const inputs = form.querySelectorAll('input, textarea, select');
+            
+            inputs.forEach(input => {
+                if (input.type === 'checkbox') {
+                    // Handle checkboxes
+                    values.push(input.checked ? 'yes' : 'no');
+                } else if (input.type === 'radio') {
+                    // Only add radio button value if it's checked
+                    if (input.checked) {
+                        values.push(input.value);
+                    }
+                } else if (input.type !== 'submit') {
+                    // Handle all other input types
+                    values.push(input.value);
+                }
+            });
+            
+            // Join all values with tabs
+            let output = values.join('\t');
+            
+            // Clear existing QR code
+            const existingQR = document.getElementById('qrcode');
+            if (existingQR) {
+                existingQR.innerHTML = '';
+            } else {
+                // Create a container for the QR code if it doesn't exist
+                const qrContainer = document.createElement('div');
+                qrContainer.id = 'qrcode';
+                document.body.appendChild(qrContainer);
             }
-          } else if (input.type !== 'submit') {
-            // Handle all other input types
-            values.push(input.value);
-          }
-        });
         
-        // Join all values with tabs
-        let output = values.join('\t');
+            // Generate the new QR code
+            new QRCode(document.getElementById("qrcode"), {
+                text: output,
+                width: 256,
+                height: 256
+            });
         
-        // Clear existing QR code
-        const existingQR = document.getElementById('qrcode');
-        if (existingQR) {
-          existingQR.innerHTML = '';
-        } else {
-          // Create a container for the QR code if it doesn't exist
-          const qrContainer = document.createElement('div');
-          qrContainer.id = 'qrcode';
-          document.body.appendChild(qrContainer);
-        }
-    
-        // Generate the new QR code
-        new QRCode(document.getElementById("qrcode"), {
-          text: output,
-          width: 256,
-          height: 256
-        });
-    
-        alert('Form submitted! QR Code updated below. Scan and copy the data into Google Sheets.');
-      };
+            alert('Form submitted! QR Code updated below. Scan and copy the data into Google Sheets.');
+        };
     </script>
 </body>
 </html>
